@@ -28,7 +28,17 @@ class PollReader():
         self.file_obj = open(self.full_path, 'r')
 
         # read in each line of the file to a list
-        self.raw_data = self.file_obj.readlines()
+        with open(self.full_path, 'r') as f:
+            self.raw_data = f.readlines()
+
+        self.data_dict = {
+            'month': [],
+            'date': [],
+            'sample': [],
+            'sample type': [],
+            'Harris result': [],
+            'Trump result': []
+        }
 
         # close the file handler
         self.file_obj.close()
@@ -55,10 +65,13 @@ class PollReader():
         """
 
         # iterate through each row of the data
-        for i in self.raw_data:
+        for row in self.raw_data[1:]:
+            separated = row.strip().split(',')
 
-            # split up the row by column
-            seperated = i.split(' ')
+            # sample column looks like "1880 LV"
+            sample_parts = seprated[2].split()
+            sample_size = int(sample_parts[0])
+            sample_type = sample_parts[1]
 
             # map each part of the row to the correct column
             self.data_dict['month'].append(seperated[0])
@@ -80,7 +93,15 @@ class PollReader():
             str: A string indicating the candidate with the highest polling percentage or EVEN,
              and the highest polling percentage.
         """
-        pass
+        max_harris = max(self.data_dict['Harris result'])
+        max_trump = max(self.data_dict['Trump result'])
+
+        if max_harris > max_trump:
+            return f"Harris {max_harris*100:.1f}%"
+        elif max_trump > max_harris:
+            return f"Trump {max_trump*100:.1f}%"
+        else:
+            return f"EVEN {max_harris*100:.1f}%"
 
 
     def likely_voter_polling_average(self):
