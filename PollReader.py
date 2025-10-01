@@ -68,18 +68,17 @@ class PollReader():
         for row in self.raw_data[1:]:
             separated = row.strip().split(',')
 
-            # sample column looks like "1880 LV"
-            sample_parts = seprated[2].split()
-            sample_size = int(sample_parts[0])
-            sample_type = sample_parts[1]
+        # sample column looks like "1880 LV" → split into number and type
+            sample_parts = separated[2].split()
+            sample_size = int(sample_parts[0])       # 1880
+            sample_type = sample_parts[1]            # LV
 
-            # map each part of the row to the correct column
-            self.data_dict['month'].append(seperated[0])
-            self.data_dict['date'].append(int(seperated[1]))
-            self.data_dict['sample'].append(int(seperated[2]))
-            self.data_dict['sample type'].append(seperated[2])
-            self.data_dict['Harris result'].append(float(seperated[3]))
-            self.data_dict['Trump result'].append(float(seperated[4]))
+            self.data_dict['month'].append(separated[0])
+            self.data_dict['date'].append(int(separated[1]))
+            self.data_dict['sample'].append(sample_size)
+            self.data_dict['sample type'].append(sample_type)
+            self.data_dict['Harris result'].append(float(separated[3]))
+            self.data_dict['Trump result'].append(float(separated[4]))
 
 
     def highest_polling_candidate(self):
@@ -143,7 +142,7 @@ class PollReader():
         harris_late = sum(harris[-30:]) / 30
         trump_late = sum(trump[-30:]) / 30
 
-        return harris_late - harris_early, trump_late - trump_early
+        return harris_early - harris_late, trump_early - trump_late
 
 
 class TestPollReader(unittest.TestCase):
